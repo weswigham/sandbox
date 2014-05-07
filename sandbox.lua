@@ -42,7 +42,7 @@ end
 local function sandbox(func, blacklist, additions)
     local _Acopy = copy(additions) or {}
     local _Gcopy = copy(_G)
-    removeViaHash(_Gcopy, blacklist)
+    removeViaHash(_Gcopy, blacklist or {})
     local _env = merge(_Gcopy, _Acopy)
     
     local fcopy = loadstring(string.dump(func), nil, nil, _env) --Copy the function and reload it to pickle upvalues
