@@ -35,7 +35,11 @@ local testfunc = function()
 
     GLOBAL = true
     table.GLOBAL = true
+    setmetatable(_G, {meta = true})
     setmetatable(table, {meta = true})
+    
+    assert(getmetatable(_G).meta)
+    assert(getmetatable(table).meta)
     
     assert(KEYS)
     assert(KEYS[1] == "key1") --never forget, 1-indexing
@@ -54,6 +58,7 @@ assert(sandbox(testfunc, blacklist, additions))
 
 assert(not GLOBAL)
 assert(not table.GLOBAL)
+assert(not getmetatable(_G))
 assert(not getmetatable(table))
 
 print("Tests passed.")

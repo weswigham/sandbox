@@ -20,24 +20,6 @@ local function removeViaHash(table, toRemove)
 end
 
 --[[
-    takes in a table and locks the metatable of all children in that table
-]]
-local function freezeMetatables(table)
-    for k,v in pairs(table) do
-        if typeof(v)==table and ((not getmetatable(v)) or (not (getmetatable(v).__metatable))) then
-            local tbl = getmetatable(v) or {};
-            tbl.__metatable = {__metatable = true}; --Only expose the information that the metatable is locked to viewing/editing
-            setmetatable(v, tbl);
-        end
-    end
-    for k,v in pairs(table) do
-        if typeof(v)==table then
-            freezeMetatables(v)
-        end
-    end
-end
-
---[[
     merges table b into a, overriding values in a
 ]]
 local function merge(a, b)
