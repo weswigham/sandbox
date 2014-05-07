@@ -22,8 +22,9 @@ assert(math.random()~=-1)
 
 `sandbox` takes three arguments -
 ```
-sandbox(function [, blacklist, additions])
+sandbox(function [,args, blacklist, additions])
 ```
+The args table is unpacked and passed into the sandboxed function when it is called.
 The function is the function that needs ot be sandboxed (note: we can't sandbox a C function, only lua ones).
 The blacklist is an object containing a set of keys that aught not to be copied from `_G` into the fake environment.
 The additions table is an object that is merged with the _G copy, so you are able to make things appear in scope to the function to the sandbox, if you need to.
