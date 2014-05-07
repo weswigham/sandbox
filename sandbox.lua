@@ -39,7 +39,7 @@ end
     we need to remove from the global environment
     additions are anything we want to inject into the global environment for this call
 ]]
-local function sandbox(func, blacklist, additions)
+local function sandbox(func, args, blacklist, additions)
     local _Acopy = copy(additions) or {}
     local _Gcopy = copy(_G)
     removeViaHash(_Gcopy, blacklist or {})
@@ -48,7 +48,7 @@ local function sandbox(func, blacklist, additions)
     local fcopy = loadstring(string.dump(func), nil, nil, _env) --Copy the function and reload it to pickle upvalues
     
     setfenv(fcopy, _env)
-    return fcopy()
+    return fcopy(unpack(args or {}))
 end
 
 

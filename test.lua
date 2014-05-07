@@ -26,7 +26,7 @@ local additions = {
     end
 }
 
-local testfunc = function()
+local testfunc = function(str)
     assert(not debug)
     assert(not getfenv)
     assert(not setfenv)
@@ -41,6 +41,9 @@ local testfunc = function()
     assert(getmetatable(_G).meta)
     assert(getmetatable(table).meta)
     
+    assert(GLOBAL)
+    assert(table.GLOBAL)
+    
     assert(KEYS)
     assert(KEYS[1] == "key1") --never forget, 1-indexing
     assert(KEYS[2] == "key2")
@@ -49,12 +52,12 @@ local testfunc = function()
     assert(ARGV[2] == "value2")
     
     assert(print("This shouldn't print")=='Overriden!')
-    return GLOBAL
+    return str..' and returned from it!'
 end
 
 print("Starting tests...")
 
-assert(sandbox(testfunc, blacklist, additions))
+assert(sandbox(testfunc, {'This was passed to the fucntion'}, blacklist, additions)=='This was passed to the fucntion and returned from it!')
 
 assert(not GLOBAL)
 assert(not table.GLOBAL)
