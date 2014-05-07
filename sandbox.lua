@@ -4,6 +4,10 @@ local pairs = pairs
 local typeof = type
 local setmetatable = setmetatable
 local getmetatable = getmetatable
+local unpack = unpack
+local setfenv = setfenv
+local loadstring = loadstring
+local dump = string.dump
 
 --[[
     Removes elements arbitrarily deep in a hash
@@ -45,7 +49,7 @@ local function sandbox(func, args, blacklist, additions)
     removeViaHash(_Gcopy, blacklist or {})
     local _env = merge(_Gcopy, _Acopy)
     
-    local fcopy = loadstring(string.dump(func), nil, nil, _env) --Copy the function and reload it to pickle upvalues
+    local fcopy = loadstring(dump(func), nil, nil, _env) --Copy the function and reload it to pickle upvalues
     
     setfenv(fcopy, _env)
     return fcopy(unpack(args or {}))
