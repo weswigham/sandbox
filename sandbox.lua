@@ -25,12 +25,12 @@ local function freezeMetatables(table)
         if typeof(v)==table and ((not getmetatable(v)) or (not (getmetatable(v).__metatable))) then
             local tbl = getmetatable(v) or {};
             tbl.__metatable = {__metatable = true}; --Only expose the information that the metatable is locked to viewing/editing
-            if not tbl.__newindex then
-                tbl.__newindx = function(k, val)
-                    return val --disallow new keys
-                end
-            end
             setmetatable(v, tbl);
+        end
+    end
+    for k,v in pairs(table) do
+        if typeof(v)==table then
+            freezeMetatables(v)
         end
     end
 end
