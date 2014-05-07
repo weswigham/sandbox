@@ -2,6 +2,8 @@ require('deepcopy')
 local copy = table.deepcopy
 local pairs = pairs
 local typeof = type
+local setmetatable = setmetatable
+local getmetatable = getmetatable
 
 --[[
     Removes elements arbitrarily deep in a hash
@@ -36,17 +38,34 @@ local function freezeMetatables(table)
 end
 
 --[[
+    merges table b into a, overriding values in a
+]]
+local function merge(a, b)
+    for k,v in pairs(b) do
+        if typeof(v)=='table' then
+            a[k] = merge(a[k] or {}, b[k] or {})
+        else
+            a[k] = b[k]
+        end
+    end
+    return a
+end
+
+--[[
     func is the function to sandbox
     blacklist is the list of sensitive functions we know 
     we need to remove from the global environment
+    additions are anything we want to inject into the global environment for this call
 ]]
-local function sandbox(func, blacklist)
+local function sandbox(func, blacklist, additions)
+    local _Acopy = copy(additions) or {}
     local _Gcopy = copy(_G)
     removeViaHash(_Gcopy, blacklist)
-    freezeMetatables(_Gcopy)
-    local fcopy = loadstring(string.dump(func), nil, nil, _Gcopy) --Copy the function and reload it to pickle upvalues
+    local _env = merge(_Gcopy, _Acopy)
     
-    setfenv(fcopy, _Gcopy)
+    local fcopy = loadstring(string.dump(func), nil, nil, _env) --Copy the function and reload it to pickle upvalues
+    
+    setfenv(fcopy, _env)
     return fcopy()
 end
 
